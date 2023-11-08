@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LISTA DE PRODUCTOS</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de PRODUCTOS</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Nombre</th>
+                <th>Codigo</th>
+                <th>Denominacion</th>
+                <th>precio</th>
+                <th>rubro</th>
+                
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            
+        </tbody>
+    </table>
+
+    <script>
+        // Hacer la solicitud GET a la API
+        fetch('http://localhost:3001/productos/listar')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudieron obtener los datos de la API');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Manipular los datos y mostrarlos en la tabla
+                const tablaBody = document.getElementById('tabla-body');
+
+                data.forEach(elemento => {
+                    const fila = document.createElement('tr');
+                    const id_producto = document.createElement('td');
+                    const nombre = document.createElement('td');
+                    const codigo = document.createElement('td');
+                    const denominacion = document.createElement('td');
+                    const precio = document.createElement('td');
+                    const rubro = document.createElement('td');
+                    
+
+                    id_producto.textContent = elemento.id_producto;
+                    nombre.textContent = elemento.nombre;
+                    codigo.textContent = elemento.codigo;
+                    denominacion.textContent = elemento.denominacion;
+                    precio.textContent = elemento.precio;
+                    rubro.textContent = elemento.rubro;               
+                    
+
+                    fila.appendChild(id_producto);
+                    fila.appendChild(nombre);
+                    fila.appendChild(codigo);
+                    fila.appendChild(denominacion);
+                    fila.appendChild(precio);
+                    fila.appendChild(rubro);
+                    
+
+                    tablaBody.appendChild(fila);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos de la API:', error);
+                const tablaBody = document.getElementById('tabla-body');
+                tablaBody.innerHTML = '<tr><td colspan="7">Error al obtener los datos de la API</td></tr>';
+            });
+    </script>
+</body>
+</html>

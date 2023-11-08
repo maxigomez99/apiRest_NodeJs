@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>productos</h1>
+    <form action="http://localhost:3001/alta">
+        <input type="submit" value=" Alta">
+    </form>
+    <form action="http://localhost:3001/baja">
+        <input type="submit" value=" Baja">
+    </form>
+    <form action="http://localhost:3001/modificar">
+        <input type="submit" value=" Modificar">
+    </form>
+    <form action="http://localhost:3001/listar">
+        <input type="submit" value=" Mostrar clientes">
+    </form>
+    <h1>Buscar Productos por Rubro</h1>
+
+    <label for="rubros">Selecciona un rubro:</label>
+    <select id="rubros"></select>
+
+    <button id="buscarBtn">Buscar</button>
+
+    <div id="resultado"></div>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Nombre</th>
+                <th>Codigo</th>
+                <th>Denominacion</th>
+                <th>precio</th>
+                
+                
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            
+        </tbody>
+    </table>
+    <script>
+        const rubrosSelect = document.getElementById('rubros');
+        const buscarBtn = document.getElementById('buscarBtn');
+        const resultadoDiv = document.getElementById('resultado');
+
+        fetch('http://localhost:3001/rubros/listar')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(rubro => {
+                    const option = document.createElement('option');
+                    option.value = rubro.id_rubro;
+                    option.textContent = rubro.nombre;
+                    rubrosSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al obtener rubros:', error));
+
+            buscarBtn.addEventListener('click', () => {
+    const idRubroSeleccionado = rubrosSelect.value;
+
+    // Agrega el idRubroSeleccionado a la URL de la solicitud
+    const url = `http://localhost:3001/productos/listarXRubro/${idRubroSeleccionado}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se pudieron obtener los datos de la API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Manipular los datos y mostrarlos en la tabla
+            const tablaBody = document.getElementById('tabla-body');
+
+            data.forEach(elemento => {
+                const fila = document.createElement('tr');
+                const id_producto = document.createElement('td');
+                const nombre = document.createElement('td');
+                const codigo = document.createElement('td');
+                const denominacion = document.createElement('td');
+                const precio = document.createElement('td');
+                const rubro = document.createElement('td');
+
+                id_producto.textContent = elemento.id_producto;
+                nombre.textContent = elemento.nombre;
+                codigo.textContent = elemento.codigo;
+                denominacion.textContent = elemento.denominacion;
+                precio.textContent = elemento.precio;
+                rubro.textContent = elemento.rubro;
+
+                fila.appendChild(id_producto);
+                fila.appendChild(nombre);
+                fila.appendChild(codigo);
+                fila.appendChild(denominacion);
+                fila.appendChild(precio);
+                fila.appendChild(rubro);
+
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener los datos de la API:', error);
+            const tablaBody = document.getElementById('tabla-body');
+            tablaBody.innerHTML = '<tr><td colspan="7">Error al obtener los datos de la API</td></tr>';
+        });
+});
+    </script>
+
+    
+</body>
+</html>
